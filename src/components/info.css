@@ -1,0 +1,11 @@
+.infoPanel {
+  display: block;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.infoPanel-row {
+  margin-right: 1rem;
+  display: inline-block;
+}
+

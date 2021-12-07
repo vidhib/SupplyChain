@@ -3,7 +3,7 @@ import React from 'react';
 import CytoscapeComponent from "react-cytoscapejs";
 
 
-export default function Graph({ updateSearch, data }) {
+export default function Graph({ updateSearch, data, width }) {
 
 
   const layout = {
@@ -78,7 +78,7 @@ export default function Graph({ updateSearch, data }) {
         <CytoscapeComponent
           elements={CytoscapeComponent.normalizeElements(data)}
           // pan={{ x: 200, y: 200 }}
-          style={{ width: window.innerWidth, height: 500 }}
+          style={{ width: width, height: 500 }}
           zoomingEnabled={true}
           maxZoom={3}
           minZoom={0.1}

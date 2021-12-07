@@ -1,19 +1,20 @@
+import tradingPartners from './tradingPartners.json';
 
 const headers = {
   Accept: 'application/json',
   'X-Api-Key': 'MTpJbnRlcnZpZXclMjAyMDIxLTA5LTIyOjE2MzIzNTk2NTU6NWNhMzViYjk.ZmEwZWI5OTdmYWJjYWFlZWJmY2YyNGYyN2FkMmQ5YzkwODQ4NWNiYg'
 }
 
-async function getData() {
-  const response = await fetch('https://api.altana.ai/atlas/v1/company/id/e978b84b-13c8-598c-b02a-0400d53b7a7f', {
-    headers: headers
-  })
-
-  const companies = await response.json();
-  return companies;
-}
 
 export async function getCompanyDetails(name) {
+  const res = await fetch(`https://api.altana.ai/atlas/v1/company/match/${name}`, {
+    headers: headers
+  })
+  const companyDetails = res.json()
+  return companyDetails;
+}
+
+export async function getTradingPartners(name) {
   const response = await fetch(`https://api.altana.ai/atlas/v1/company/match/${name}`, {
     headers: headers
   })
@@ -45,7 +46,6 @@ export async function getCompanyDetails(name) {
 
 export async function getFacilities(id, name) {
 
-  ///company/id/{company_id}/trading-partners
   const facilities = await fetch(`https://api.altana.ai/atlas/v1/company/id/${id}/facilities`, {
     headers: headers
   })
@@ -72,4 +72,4 @@ export async function getFacilities(id, name) {
 
 }
 
-export default getData;
+export default getCompanyDetails;
