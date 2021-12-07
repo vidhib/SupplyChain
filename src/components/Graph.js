@@ -3,7 +3,7 @@ import React from 'react';
 import CytoscapeComponent from "react-cytoscapejs";
 
 
-export default function Graph({ getDetails, data, ele }) {
+export default function Graph({ updateSearch, data }) {
 
 
   const layout = {
@@ -30,7 +30,7 @@ export default function Graph({ getDetails, data, ele }) {
 
         "z-index": "10",
         "text-color": "#4a56a6",
-        "font-size": 10
+        "font-size": 15
       }
     },
     {
@@ -66,7 +66,6 @@ export default function Graph({ getDetails, data, ele }) {
     }
   ];
 
-  let myCyRef;
   return (
     <div>
 
@@ -88,11 +87,10 @@ export default function Graph({ getDetails, data, ele }) {
           layout={layout}
           stylesheet={styleSheet}
           cy={cy => {
-            myCyRef = cy;
             cy.on("click", "node", evt => {
               cy.removeAllListeners()
               var node = evt.target;
-              getDetails(node.data())
+              updateSearch(node.data())
             });
           }}
         />

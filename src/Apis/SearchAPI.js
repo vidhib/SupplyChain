@@ -1,4 +1,3 @@
-import tradingPartners from './tradingPartners.json';
 
 const headers = {
   Accept: 'application/json',
@@ -20,7 +19,7 @@ export async function getCompanyDetails(name) {
   })
   const company = await response.json();
   const id = company.altana_canon_id;
-  console.log(id)
+
   ///company/id/{company_id}/trading-partners
   const partners = await fetch(`https://api.altana.ai/atlas/v1/company/id/${id}/trading-partners`, {
     headers: {
@@ -31,12 +30,12 @@ export async function getCompanyDetails(name) {
   const tradingPartners = await partners.json()
   //console.log(tradingPartners)
   let nodes = [{ data: { id: id, label: name } }];
-  tradingPartners.companies.slice(0, 10).forEach((company) => {
+  tradingPartners.companies.forEach((company) => {
     nodes.push({ data: { id: company.altana_canon_id, label: company.company_name } })
   })
 
   let edges = []
-  tradingPartners.companies.slice(0, 10).forEach((data) => {
+  tradingPartners.companies.forEach((data) => {
     edges.push({ data: { source: id, target: data.altana_canon_id } })
   })
   const data = { nodes: nodes, edges: edges }
@@ -51,18 +50,25 @@ export async function getFacilities(id, name) {
     headers: headers
   })
   const facilitiesList = await facilities.json()
+  if (facilities.length > 0) {
+    let nodes = [{ data: { id: id, label: name } }];
+    facilitiesList.slice(0, 10).forEach((facility) => {
+      nodes.push({ data: { id: facility.facility_canon_id, label: facility.address } })
+    })
+
+    let edges = []
+    facilitiesList.forEach((data) => {
+      edges.push({ data: { source: id, target: data.facility_canon_id } })
+    })
+    const data = { nodes: nodes, edges: edges }
+    //  return ({ company, data })
+    //  return ({ nodes: nodes, edges: edges })
+    return facilitiesList
+  }
   //console.log(tradingPartners)
-  let nodes = [{ data: { id: id, label: name } }];
-  facilitiesList.slice(0, 10).forEach((facility) => {
-    nodes.push({ data: { id: facility.facility_canon_id, label: facility.address } })
-  })
 
-  let edges = []
-  facilitiesList.slice(0, 10).forEach((data) => {
-    edges.push({ data: { source: id, target: data.facility_canon_id } })
-  })
 
-  return ({ nodes: nodes, edges: edges })
+  return ({})
 
 }
 

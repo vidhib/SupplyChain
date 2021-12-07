@@ -1,17 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+
+import { render } from "react-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
 import './index.css';
 import App from './App';
-import reducer from './state/rootReducer'
+import Search from './components/Search';
 
-const store = createStore(reducer)
-console.log(store.getState())
-ReactDOM.render(
-  <Provider store={store}>
+// const store = createStore(reducer)
+// console.log(store.getState())
+// ReactDOM.render(
+//   <Provider store={store}>
+//     <App />
+//   </Provider>,
+//   document.getElementById('root')
+// );
+
+render(
+  <BrowserRouter>
     <App />
-  </Provider>,
-  document.getElementById('root')
+  </BrowserRouter>,
+  document.getElementById("root")
 );
 
