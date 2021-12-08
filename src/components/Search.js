@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import Graph from './Graph';
 import Info from './Info';
-import getCompanyDetails, { getTradingPartners, getFacilities } from '../Apis/SearchAPI';
+import { getTradingPartners, getFacilities } from '../Apis/SearchAPI';
 import './search.css'
 import Facilities from './Facilities';
 import List from './List';
@@ -10,17 +10,13 @@ import List from './List';
 
 export default function Search() {
 
-  //const [graphData, setGraphData] = useState(null);
-  //let { company } = useParams();
   let navigate = useNavigate();
   let location = useLocation();
-  //console.log(location)
+
   const path = location.pathname.split('/')
   const searchItem = path[path.length - 1]
 
   const [info, setInfo] = useState({ data: null, graph: null, company: null })
-  const [id, setId] = useState(searchItem);
-  const [companyDetails, setCompanyDetails] = useState({});
   const [searchType, setSearchType] = useState("tradingPartners") // Other option is facilities
   const [facilitiesList, setFacilitiesList] = useState({});
 
@@ -29,6 +25,7 @@ export default function Search() {
       if (searchType === "tradingPartners") {
         getTradingPartners(searchItem)
           .then(({ company, tradingPartners }) => {
+            const id = company.altana_canon_id;
             let nodes = [{ data: { id: id, label: company.company_name } }];
             const companies = tradingPartners.companies.length > 10 ? tradingPartners.companies.slice(0, 10) : tradingPartners.companies;
             companies.forEach((partner) => {
@@ -46,6 +43,7 @@ export default function Search() {
         getFacilities(searchItem)
           .then(({ company, facilities }) => {
             if (facilities.length > 0) {
+              const id = company.altana_canon_id;
               const list = facilities.length > 10 ? facilities.slice(0, 10) : facilities;
 
               let nodes = [{ data: { id: id, label: company.company_name } }];
@@ -72,16 +70,8 @@ export default function Search() {
 
   }, [searchItem, searchType])
 
-  // useEffect(() => {
-  //   if (searchItem !== null && searchItem !== "") {
-  //     getCompanyDetails(searchItem)
-  //       .then((res) => {
-  //         setCompanyDetails(res)
-  //       })
-  //   }
-  // }, [searchItem])
 
-
+  /// Change it to apppend to path and then navigate
   const searchCallback = (label) => {
     console.log("Search callback called")
     navigate(`/search/${label}`)
@@ -98,13 +88,13 @@ export default function Search() {
 
   return (
     <>
-      <div>
-        <input type="text" id="company" style={{ "margin": "30px" }}></input>
-        <button onClick={() => {
-          navigate(`/search/${document.getElementById("company").value}`)
-        }}> Search </button>
-        <div className="infoPanel-row" onChange={updateSearchType}>
-          <input type="radio"
+      <div className="searchPanel">
+        <div><p className="searchPanel__input-label">Search for   </p>
+          <input className="searchPanel__input" type="text" id="company"></input>
+        </div>
+
+        <div className="search-row" onChange={updateSearchType}>
+          By <input type="radio"
             defaultChecked={searchType === "tradingPartners"}
             id="tradingPartners"
             name="details" />
@@ -112,6 +102,10 @@ export default function Search() {
           <input type="radio" id="facilities" name="details" defaultChecked={searchType === "facilities"} />
           <label htmlFor="facilities">Facilities</label>
         </div>
+        <button
+          className="searchPanel__btn" onClick={() => {
+            navigate(`/search/${document.getElementById("company").value}`)
+          }}> Search </button>
       </div>
 
 
@@ -120,17 +114,16 @@ export default function Search() {
         <div className="searchResultsPanel">
           {info.graph !== null &&
             <div className="searchResults__graph">
-              <Info company={info.company} selectedOption={searchType} setSearchType={setSearchType} />
+              <Info company={info.company} />
               <Graph
                 data={info.graph}
                 updateSearch={updateSearch}
                 ele={document.getElementById("company").value}
-                key={id}
-                width="1000px"
+                width={"800px"}
               />
             </div>
           }
-          {info.data !== null && info.data.companies !== null && info.data.companies.length > 10 && <List listItems={info.graph.nodes} searchCallback={searchCallback} />}
+          {info.graph !== null && info.graph.nodes !== null && info.graph.nodes.length > 10 && <List listItems={info.graph.nodes} searchCallback={searchCallback} />}
           {/* {info.graph !== null && info.graph.length === 0 && <div>No results found</div>} */}
         </div>
         <div> {facilitiesList.facilities && <Facilities facilities={facilitiesList.facilities} />

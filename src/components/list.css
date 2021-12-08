@@ -1,8 +1,4 @@
 ul {
-  top: 20px;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
   height: 500px;
   width: 250px;
   overflow: scroll;
@@ -21,4 +17,14 @@ li {
   
   border-bottom: 1px solid #ccc;
 
+}
+
+.filter {
+  padding: 10px;
+  font-size: 17px;
+  width: 100%;
+}
+
+.filteredItem {
+  cursor: pointer;
 }

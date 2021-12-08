@@ -78,7 +78,7 @@ export default function Graph({ updateSearch, data, width }) {
         <CytoscapeComponent
           elements={CytoscapeComponent.normalizeElements(data)}
           // pan={{ x: 200, y: 200 }}
-          style={{ width: width, height: 500 }}
+          style={{ width: width, height: 600 }}
           zoomingEnabled={true}
           maxZoom={3}
           minZoom={0.1}

@@ -19,14 +19,16 @@ const List = ({ listItems, searchCallback }) => {
 
   return (<div className="listContainer">
     <input type="search"
+      className="filter"
       value={name}
       onChange={filter}
+      placeholder="Search..."
     />
     <ul style={{ "listStyleType": "none" }}>
       {filteredItems && filteredItems.length > 0 ?
         filteredItems.map(item => {
           return <li key={item.data.label} onClick={() => searchCallback(item.data.label)}>
-            <span className="name">{item.data.label}</span>
+            <span className="filteredItem">{item.data.label}</span>
           </li>
         }) : <h2> No results found</h2>
       }
