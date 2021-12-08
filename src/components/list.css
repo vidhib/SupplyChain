@@ -3,7 +3,8 @@ ul {
   bottom: 20px;
   left: 20px;
   right: 20px;
-  height:500px;
+  height: 500px;
+  width: 250px;
   overflow: scroll;
   margin: 0;
   padding: 0;

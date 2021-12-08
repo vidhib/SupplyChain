@@ -18,25 +18,50 @@ export default function Search() {
   const path = location.pathname.split('/')
   const searchItem = path[path.length - 1]
 
-  const [info, setInfo] = useState({ graph: null, company: null })
+  const [info, setInfo] = useState({ data: null, graph: null, company: null })
   const [id, setId] = useState(searchItem);
   const [companyDetails, setCompanyDetails] = useState({});
   const [searchType, setSearchType] = useState("tradingPartners") // Other option is facilities
   const [facilitiesList, setFacilitiesList] = useState({});
 
   useEffect(() => {
-    //  console.log("id updated" + "..." + id)
-    //Select here if trading partners or facilities should be searched, and then make the relavant API call.
     if (searchItem !== "") {
       if (searchType === "tradingPartners") {
         getTradingPartners(searchItem)
-          .then(({ company, data }) => {
-            setInfo({ ...info, graph: data, company: company })
+          .then(({ company, tradingPartners }) => {
+            let nodes = [{ data: { id: id, label: company.company_name } }];
+            const companies = tradingPartners.companies.length > 10 ? tradingPartners.companies.slice(0, 10) : tradingPartners.companies;
+            companies.forEach((partner) => {
+              nodes.push({ data: { id: partner.altana_canon_id, label: partner.company_name } })
+            })
+
+            let edges = []
+            companies.forEach((partner) => {
+              edges.push({ data: { source: id, target: partner.altana_canon_id } })
+            })
+            const graphData = { nodes: nodes, edges: edges }
+            setInfo({ ...info, data: tradingPartners, graph: graphData, company: company })
           })
       } else {
         getFacilities(searchItem)
-          .then(() => {
-            console.log("Searched for facilities")
+          .then(({ company, facilities }) => {
+            if (facilities.length > 0) {
+              const list = facilities.length > 10 ? facilities.slice(0, 10) : facilities;
+
+              let nodes = [{ data: { id: id, label: company.company_name } }];
+              list.forEach((facility) => {
+                nodes.push({ data: { id: facility.facility_canon_id, label: facility.address } })
+              })
+
+              let edges = []
+              list.forEach((facility) => {
+                edges.push({ data: { source: id, target: facility.facility_canon_id } })
+              })
+              const data = { nodes: nodes, edges: edges }
+              setInfo({ ...info, data: facilities, graph: data, company: company })
+            }
+            setInfo({ ...info, data: [], graph: [], company: company })
+
           })
       }
     }
@@ -44,32 +69,31 @@ export default function Search() {
       setInfo({ graph: null, company: null })
     })
 
-  }, [searchItem])
 
-  useEffect(() => {
-    if (searchItem !== "") {
-      getCompanyDetails(searchItem)
-        .then((res) => {
-          setCompanyDetails(res)
-        })
-    }
-  }, [])
+  }, [searchItem, searchType])
+
+  // useEffect(() => {
+  //   if (searchItem !== null && searchItem !== "") {
+  //     getCompanyDetails(searchItem)
+  //       .then((res) => {
+  //         setCompanyDetails(res)
+  //       })
+  //   }
+  // }, [searchItem])
 
 
-  const searchCallback = (option) => {
+  const searchCallback = (label) => {
     console.log("Search callback called")
-    if (option === "facilities") {
-      getFacilities(info.company.altana_canon_id, info.company.name)
-        .then((res) => {
-          setFacilitiesList(res)
-        })
-    } else {
-
-    }
+    navigate(`/search/${label}`)
   }
 
   const updateSearch = ({ label }) => {
     navigate(`${location.pathname}/${label}`)
+  }
+
+  const updateSearchType = (event) => {
+    console.log(event.target.id)
+    setSearchType(event.target.id)
   }
 
   return (
@@ -79,7 +103,7 @@ export default function Search() {
         <button onClick={() => {
           navigate(`/search/${document.getElementById("company").value}`)
         }}> Search </button>
-        <div className="infoPanel-row" onChange={setSearchType}>
+        <div className="infoPanel-row" onChange={updateSearchType}>
           <input type="radio"
             defaultChecked={searchType === "tradingPartners"}
             id="tradingPartners"
@@ -106,7 +130,8 @@ export default function Search() {
               />
             </div>
           }
-          {info.graph !== null && <List listItems={info.graph.nodes} searchCallback={searchCallback} />}
+          {info.data !== null && info.data.companies !== null && info.data.companies.length > 10 && <List listItems={info.graph.nodes} searchCallback={searchCallback} />}
+          {/* {info.graph !== null && info.graph.length === 0 && <div>No results found</div>} */}
         </div>
         <div> {facilitiesList.facilities && <Facilities facilities={facilitiesList.facilities} />
         }

@@ -5,7 +5,6 @@ const List = ({ listItems, searchCallback }) => {
   const [name, setName] = useState("");
   const [filteredItems, setFilteredItems] = useState(listItems)
 
-
   const filter = (evt) => {
     const keyword = evt.target.value;
     if (keyword !== "") {
@@ -26,7 +25,7 @@ const List = ({ listItems, searchCallback }) => {
     <ul style={{ "listStyleType": "none" }}>
       {filteredItems && filteredItems.length > 0 ?
         filteredItems.map(item => {
-          return <li key={item.data.label} onClick={() => searchCallback(item.dat.label)}>
+          return <li key={item.data.label} onClick={() => searchCallback(item.data.label)}>
             <span className="name">{item.data.label}</span>
           </li>
         }) : <h2> No results found</h2>

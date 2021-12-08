@@ -2,6 +2,7 @@ import React from 'react';
 import './info.css';
 
 const Info = ({ company }) => {
+  if (company === null) return
   return (
     <div className="infoPanel">
       <div className="infoPanel-row">Showing details for {company.company_name} </div>
