@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
+import { getCompanyFacilities, getCompanyTradingPartners, getFacilityTradingPartners } from '../Apis/SearchAPI';
+
 import Graph from './Graph';
 import Info from './Info';
-import { getTradingPartners, getFacilities } from '../Apis/SearchAPI';
-import './search.css'
-import Facilities from './Facilities';
 import List from './List';
 
+import './search.css'
 
 export default function Search() {
 
@@ -16,68 +16,87 @@ export default function Search() {
   const path = location.pathname.split('/')
   const searchItem = path[path.length - 1]
 
-  const [info, setInfo] = useState({ data: null, graph: null, company: null })
-  const [searchType, setSearchType] = useState("tradingPartners") // Other option is facilities
-  const [facilitiesList, setFacilitiesList] = useState({});
+  const [info, setInfo] = useState({ data: null, graph: null, altanaObj: null })
+  const [searchType, setSearchType] = useState("tradingPartners")
+  const [resultType, setResultType] = useState("partner") // Other option is facility
 
   useEffect(() => {
     if (searchItem !== "") {
-      if (searchType === "tradingPartners") {
-        getTradingPartners(searchItem)
-          .then(({ company, tradingPartners }) => {
-            const id = company.altana_canon_id;
-            let nodes = [{ data: { id: id, label: company.company_name } }];
-            const companies = tradingPartners.companies.length > 10 ? tradingPartners.companies.slice(0, 10) : tradingPartners.companies;
-            companies.forEach((partner) => {
-              nodes.push({ data: { id: partner.altana_canon_id, label: partner.company_name } })
+      if (resultType === "facility") {
+        getFacilityTradingPartners(searchItem)
+          .then((facilities) => {
+            let nodes = [{ data: { id: searchItem, label: searchItem } }];
+            const facilitiesList = facilities.length > 10 ? facilities.slice(0, 10) : facilities;
+            facilitiesList.forEach((facility) => {
+              nodes.push({ data: { id: facility.facility_canon_id, label: facility.company_name, type: 'facility' } })
             })
 
             let edges = []
-            companies.forEach((partner) => {
-              edges.push({ data: { source: id, target: partner.altana_canon_id } })
+            facilitiesList.forEach((facility) => {
+              edges.push({ data: { source: searchItem, target: facility.facility_canon_id } })
             })
             const graphData = { nodes: nodes, edges: edges }
-            setInfo({ ...info, data: tradingPartners, graph: graphData, company: company })
+            setInfo({ ...info, data: facilities, graph: graphData })
           })
       } else {
-        getFacilities(searchItem)
-          .then(({ company, facilities }) => {
-            if (facilities.length > 0) {
-              const id = company.altana_canon_id;
-              const list = facilities.length > 10 ? facilities.slice(0, 10) : facilities;
-
-              let nodes = [{ data: { id: id, label: company.company_name } }];
-              list.forEach((facility) => {
-                nodes.push({ data: { id: facility.facility_canon_id, label: facility.address } })
+        if (searchType === "tradingPartners") {
+          getCompanyTradingPartners(searchItem)
+            .then(({ altanaObj, tradingPartners }) => {
+              const graphData = getTradingPartnersGraphData(altanaObj, tradingPartners)
+              setInfo({ ...info, data: tradingPartners, graph: graphData, altanaObj: altanaObj })
+            })
+        } else {
+          // search type is facilities
+          getCompanyFacilities(searchItem)
+            .then(({ altanaObj, facilities }) => {
+              const id = altanaObj.altana_canon_id;
+              let nodes = [{ data: { id: id, label: altanaObj.company_name, type: "partner" } }];
+              const companyFacilities = facilities.length > 10 ? facilities.slice(0, 10) : facilities;
+              companyFacilities.forEach((facility) => {
+                nodes.push({ data: { id: facility.facility_canon_id, label: facility.facility_canon_id, type: 'facility' } })
               })
 
               let edges = []
-              list.forEach((facility) => {
+              companyFacilities.forEach((facility) => {
                 edges.push({ data: { source: id, target: facility.facility_canon_id } })
               })
-              const data = { nodes: nodes, edges: edges }
-              setInfo({ ...info, data: facilities, graph: data, company: company })
-            }
-            setInfo({ ...info, data: [], graph: [], company: company })
-
-          })
+              const graphData = { nodes: nodes, edges: edges }
+              setInfo({ ...info, data: facilities, graph: graphData, altanaObj: altanaObj })
+            })
+        }
       }
     }
+
     return (() => {
-      setInfo({ graph: null, company: null })
+      setInfo({ ...info, data: null, graph: null, altanaObj: null })
     })
-
-
   }, [searchItem, searchType])
 
+  const getTradingPartnersGraphData = (altanaObj, tradingPartners) => {
+
+    const id = altanaObj.altana_canon_id;
+    let nodes = [{ data: { id: id, label: altanaObj.company_name } }];
+    const partners = tradingPartners.companies.length > 10 ? tradingPartners.companies.slice(0, 10) : tradingPartners.companies;
+    partners.forEach((partner) => {
+      nodes.push({ data: { id: partner.altana_canon_id, label: partner.company_name, type: 'partner' } })
+    })
+
+    let edges = []
+    partners.forEach((partner) => {
+      edges.push({ data: { source: id, target: partner.altana_canon_id } })
+    })
+    const graphData = { nodes: nodes, edges: edges }
+    return graphData
+  }
 
   /// Change it to apppend to path and then navigate
-  const searchCallback = (label) => {
+  const listSearchCallback = (label) => {
     console.log("Search callback called")
     navigate(`/search/${label}`)
   }
 
-  const updateSearch = ({ label }) => {
+  const updateSearch = ({ label, id, type }) => {
+    setResultType(type);
     navigate(`${location.pathname}/${label}`)
   }
 
@@ -90,7 +109,7 @@ export default function Search() {
     <>
       <div className="searchPanel">
         <div><p className="searchPanel__input-label">Search for   </p>
-          <input className="searchPanel__input" type="text" id="company"></input>
+          <input className="searchPanel__input" type="text" id="searchInput"></input>
         </div>
 
         <div className="search-row" onChange={updateSearchType}>
@@ -98,13 +117,13 @@ export default function Search() {
             defaultChecked={searchType === "tradingPartners"}
             id="tradingPartners"
             name="details" />
-          <label htmlFor="tradingPartners">Trading Partners</label>
+          <label htmlFor="tradingPartners">Trading Partners   </label>
           <input type="radio" id="facilities" name="details" defaultChecked={searchType === "facilities"} />
           <label htmlFor="facilities">Facilities</label>
         </div>
         <button
           className="searchPanel__btn" onClick={() => {
-            navigate(`/search/${document.getElementById("company").value}`)
+            navigate(`/search/${document.getElementById("searchInput").value}`)
           }}> Search </button>
       </div>
 
@@ -114,20 +133,17 @@ export default function Search() {
         <div className="searchResultsPanel">
           {info.graph !== null &&
             <div className="searchResults__graph">
-              <Info company={info.company} />
+              <Info altanaObj={info.altanaObj} />
               <Graph
                 data={info.graph}
                 updateSearch={updateSearch}
-                ele={document.getElementById("company").value}
-                width={"800px"}
+                ele={document.getElementById("searchInput").value}
+                width={"800"}
               />
             </div>
           }
-          {info.graph !== null && info.graph.nodes !== null && info.graph.nodes.length > 10 && <List listItems={info.graph.nodes} searchCallback={searchCallback} />}
-          {/* {info.graph !== null && info.graph.length === 0 && <div>No results found</div>} */}
-        </div>
-        <div> {facilitiesList.facilities && <Facilities facilities={facilitiesList.facilities} />
-        }
+          {info.graph !== null && info.graph.nodes !== null && info.graph.nodes.length > 10 && <List listItems={info.graph.nodes} searchCallback={listSearchCallback} />}
+          {info.graph !== null && info.graph.length === 0 && <div>No results found</div>}
         </div>
       </div>
     </>

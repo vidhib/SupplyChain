@@ -10,15 +10,6 @@
   /* border-bottom: 1px solid blue; */
 }
 
-.infoPanel__header {
-  /* width: 25%; */
-}
-
-.infoPanel__values {
-  /* //width: 80%; */
-}
-
 .infoPanel-row__title {
-font-weight: bold;
-
+  font-weight: bold;
 }

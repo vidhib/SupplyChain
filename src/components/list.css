@@ -1,12 +1,14 @@
+.listContainer {
+  margin-top: 150px;
+}
+
 ul {
   height: 500px;
   width: 250px;
-  overflow: scroll;
+  overflow-y: scroll;
   margin: 0;
   padding: 0;
-  
   border: 2px solid #ccc;
-  
   font-size: 16px;
   font-family: Arial, sans-serif;
   -webkit-overflow-scrolling: touch;
@@ -14,17 +16,15 @@ ul {
 
 li {
   padding: 10px 20px;
-  
   border-bottom: 1px solid #ccc;
-
 }
 
-.filter {
+.list-filter {
   padding: 10px;
   font-size: 17px;
   width: 100%;
 }
 
-.filteredItem {
+.list-filteredItem {
   cursor: pointer;
 }

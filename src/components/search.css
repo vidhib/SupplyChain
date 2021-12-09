@@ -17,11 +17,14 @@
 
 .searchPanel__input {
   width: 290px;
+  height: 20px;
+  font-size: 1rem;
 }
 
 .searchPanel__input-label {
   display: inline-block;
   width: 100px;
+  font-size: 1rem;
 }
 
 .searchPanel__btn {

@@ -2,14 +2,11 @@
 import React from 'react';
 import CytoscapeComponent from "react-cytoscapejs";
 
-
 export default function Graph({ updateSearch, data, width }) {
-
 
   const layout = {
     name: "random",
     fit: true,
-    // circle: true,
     directed: true,
     padding: 50,
     // spacingFactor: 1.5,
@@ -23,13 +20,12 @@ export default function Graph({ updateSearch, data, width }) {
     {
       selector: "node",
       style: {
-        backgroundColor: "#4a56a6",
-        width: 10,
-        height: 10,
+        backgroundColor: "#CD492D",
+        width: 15,
+        height: 15,
         label: "data(label)",
-
         "z-index": "10",
-        "text-color": "#4a56a6",
+        "text-color": "#CD492D",
         "font-size": 15
       }
     },
@@ -44,12 +40,14 @@ export default function Graph({ updateSearch, data, width }) {
         height: 50,
         //text props
         "text-outline-color": "#77828C",
-        "text-outline-width": 8
+        "text-outline-width": 2
       }
     },
     {
-      selector: "node[type='device']",
+      selector: "node[type='facility']",
       style: {
+        backgroundColor: "#CD492D",
+        "text-color": "#4a56a6",
         shape: "rectangle"
       }
     },
@@ -77,7 +75,6 @@ export default function Graph({ updateSearch, data, width }) {
       >
         <CytoscapeComponent
           elements={CytoscapeComponent.normalizeElements(data)}
-          // pan={{ x: 200, y: 200 }}
           style={{ width: width, height: 600 }}
           zoomingEnabled={true}
           maxZoom={3}

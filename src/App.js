@@ -8,7 +8,7 @@ import Search from './components/Search';
 export default function App() {
   return (
     <div className="App">
-      <h2 style={{ "alignSelf": "center" }}> Altana Networks </h2>
+      <h2 style={{ "alignSelf": "center" }}> Welcome to Altana Networks </h2>
       <Routes>
         <Route path="/search" element={<Search />}>
           <Route path=":company/*" element={<Search />}>
