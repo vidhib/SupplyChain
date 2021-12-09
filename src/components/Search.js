@@ -91,8 +91,7 @@ export default function Search() {
 
   /// Change it to apppend to path and then navigate
   const listSearchCallback = (label) => {
-    console.log("Search callback called")
-    navigate(`/search/${label}`)
+    navigate(`${location.pathname}/${label}`)
   }
 
   const updateSearch = ({ label, id, type }) => {
@@ -108,8 +107,14 @@ export default function Search() {
   return (
     <>
       <div className="searchPanel">
-        <div><p className="searchPanel__input-label">Search for   </p>
-          <input className="searchPanel__input" type="text" id="searchInput"></input>
+        <div>
+            <p className="searchPanel__input-label">Search for   </p>
+          <input
+            className="searchPanel__input"
+            type="text"
+            id="searchInput"
+            placeholder={searchItem ? searchItem.replace(/%20/g, " ") : " "}>
+          </input>
         </div>
 
         <div className="search-row" onChange={updateSearchType}>
@@ -134,6 +139,9 @@ export default function Search() {
           {info.graph !== null &&
             <div className="searchResults__graph">
               <Info altanaObj={info.altanaObj} />
+              {info.graph !== null && info.graph.nodes !== null && info.graph.nodes.length > 10 &&
+                <div><b>Showing 10 out of {info.graph.nodes.length}</b></div>
+              }
               <Graph
                 data={info.graph}
                 updateSearch={updateSearch}

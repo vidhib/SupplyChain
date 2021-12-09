@@ -36,8 +36,8 @@ export default function Graph({ updateSearch, data, width }) {
         "border-color": "#AAD8FF",
         "border-opacity": "0.5",
         "background-color": "#77828C",
-        width: 50,
-        height: 50,
+        width: 25,
+        height: 25,
         //text props
         "text-outline-color": "#77828C",
         "text-outline-width": 2

@@ -24,10 +24,10 @@ const List = ({ listItems, searchCallback }) => {
       onChange={filter}
       placeholder="Search more items..."
     />
-    <ul style={{ "listStyleType": "none" }}>
+    <ul>
       {filteredItems && filteredItems.length > 0 ?
         filteredItems.map(item => {
-          return <li key={item.data.label} onClick={() => searchCallback(item.data.label)}>
+          return <li key={item.data.label.toUpperCase()} onClick={() => searchCallback(item.data.label)}>
             <span className="list-filteredItem">{item.data.label}</span>
           </li>
         }) : <h2> No results found</h2>

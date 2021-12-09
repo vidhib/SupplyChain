@@ -22,7 +22,7 @@ const Info = ({ altanaObj }) => {
         {altanaObj.address && <div className="infoPanel-row infoPanel-row__title">Address</div>}
       </div>
       <div>
-        {altanaObj.company_name && <div className="infoPanel-row">{altanaObj.company_name}</div>}
+        {altanaObj.company_name && <div className="infoPanel-row infoPanel-row__title">{altanaObj.company_name.toUpperCase()}</div>}
         <div className="infoPanel-row">{altanaObj.altana_canon_id}</div>
         <div className="infoPanel-row"> {operationCountries}</div>
         <div className="infoPanel-row">{altanaObj.company_context.number_records}</div>
