@@ -8,7 +8,7 @@ const List = ({ listItems, searchCallback }) => {
   const filter = (evt) => {
     const keyword = evt.target.value;
     if (keyword !== "") {
-      const foundResults = filteredItems.filter((item) => item.data.label.toLowerCase().startsWith(keyword.toLowerCase()))
+      const foundResults = filteredItems.filter((item) => item.company_name.toLowerCase().startsWith(keyword.toLowerCase()))
       setFilteredItems(foundResults)
     }
     else {
@@ -17,6 +17,7 @@ const List = ({ listItems, searchCallback }) => {
     setName(keyword);
   }
 
+  //filteredItems.companies[0].company_name
   return (<div className="listContainer">
     <input type="search"
       className="list-filter"
@@ -27,8 +28,8 @@ const List = ({ listItems, searchCallback }) => {
     <ul>
       {filteredItems && filteredItems.length > 0 ?
         filteredItems.map(item => {
-          return <li key={item.data.label.toUpperCase()} onClick={() => searchCallback(item.data.label)}>
-            <span className="list-filteredItem">{item.data.label}</span>
+          return <li key={item.company_name.toUpperCase()} onClick={() => searchCallback(item.company_name)}>
+            <span className="list-filteredItem">{item.company_name}</span>
           </li>
         }) : <h2> No results found</h2>
       }
